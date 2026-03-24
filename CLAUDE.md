@@ -1,45 +1,41 @@
-# AI-DLC and Spec-Driven Development
+# プロジェクト概要
 
-Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life Cycle)
+**アプリ名:** えほんガチャ
+**目的:** 就寝前の絵本選びをルーレットで楽しいイベントにする
+**対象ユーザー:** 親子（就学前の子どもと保護者）
 
-## Project Context
+---
 
-### Paths
-- Steering: `.kiro/steering/`
-- Specs: `.kiro/specs/`
+# ドキュメント構成
 
-### Steering vs Specification
+| ファイル | 内容 |
+|---|---|
+| `docs/concept.md` | アプリのコンセプト・画面ごとの方針 |
+| `docs/requirements.md` | 機能要件・非機能要件・データモデル概要 |
+| `docs/as-is-to-be.md` | 現状課題と導入後の変化 |
 
-**Steering** (`.kiro/steering/`) - Guide AI with project-wide rules and context
-**Specs** (`.kiro/specs/`) - Formalize development process for individual features
+---
 
-### Active Specifications
-- Check `.kiro/specs/` for active specifications
-- Use `/kiro:spec-status [feature-name]` to check progress
+# 技術スタック
 
-## Development Guidelines
-- Think in English, generate responses in Japanese. All Markdown content written to project files (e.g., requirements.md, design.md, tasks.md, research.md, validation reports) MUST be written in the target language configured for this specification (see spec.json.language).
+未定
 
-## Minimal Workflow
-- Phase 0 (optional): `/kiro:steering`, `/kiro:steering-custom`
-- Phase 1 (Specification):
-  - `/kiro:spec-init "description"`
-  - `/kiro:spec-requirements {feature}`
-  - `/kiro:validate-gap {feature}` (optional: for existing codebase)
-  - `/kiro:spec-design {feature} [-y]`
-  - `/kiro:validate-design {feature}` (optional: design review)
-  - `/kiro:spec-tasks {feature} [-y]`
-- Phase 2 (Implementation): `/kiro:spec-impl {feature} [tasks]`
-  - `/kiro:validate-impl {feature}` (optional: after implementation)
-- Progress check: `/kiro:spec-status {feature}` (use anytime)
+---
 
-## Development Rules
-- 3-phase approval workflow: Requirements → Design → Tasks → Implementation
-- Human review required each phase; use `-y` only for intentional fast-track
-- Keep steering current and verify alignment with `/kiro:spec-status`
-- Follow the user's instructions precisely, and within that scope act autonomously: gather the necessary context and complete the requested work end-to-end in this run, asking questions only when essential information is missing or the instructions are critically ambiguous.
+# コミットメッセージ規約
 
-## Steering Configuration
-- Load entire `.kiro/steering/` as project memory
-- Default files: `product.md`, `tech.md`, `structure.md`
-- Custom files are supported (managed via `/kiro:steering-custom`)
+未定
+
+---
+
+# 行動原則
+
+- 不明点は予測せず、かならずユーザーに確認すること
+- 常にシンプルな解を選ぶこと
+- 問題の根本を解決し、安易な回避策を取らないこと
+- 変更前に関連コード・ファイルを確認し、影響範囲を最小化すること
+- 既存コードの再利用を優先し、重複を生まないこと
+- 存在しないファイル・情報を推測で語らないこと
+- 3ステップ以上のタスクは必ずPlanモードで開始すること
+- リサーチ・調査はサブエージェントに委譲すること
+- サブエージェント1つにつき、タスクは1つに限定すること

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>えほんガチャ ワイヤーフレーム</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; color: #000; background: #fff; padding: 24px; }
+
+    /* ページヘッダー */
+    .page-header { max-width: 900px; margin: 0 auto 32px; border-bottom: 2px solid #000; padding-bottom: 12px; }
+    .page-header h1 { font-size: 20px; }
+    .page-header p { font-size: 13px; color: #555; margin-top: 4px; }
+
+    /* 画面フロー図 */
+    .flow-section { max-width: 900px; margin: 0 auto 40px; border: 1px solid #999; padding: 16px; }
+    .flow-section h2 { font-size: 14px; border-bottom: 1px solid #ccc; margin-bottom: 12px; padding-bottom: 6px; }
+    .flow-diagram { font-size: 13px; line-height: 2; }
+    .flow-diagram code { background: #eee; padding: 2px 6px; }
+
+    /* セクション区切り */
+    .section-label { max-width: 900px; margin: 48px auto 8px; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; border-top: 1px dashed #ccc; padding-top: 12px; }
+
+    /* 画面グリッド（横並び表示用） */
+    .screens-row { max-width: 900px; margin: 0 auto 8px; display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+
+    /* 単体画面 */
+    .screen-wrapper { flex: 0 0 auto; }
+    .screen-wrapper .screen-id { font-size: 11px; color: #888; margin-bottom: 4px; }
+    .screen { border: 2px solid #000; width: 320px; min-height: 568px; padding: 0; position: relative; }
+
+    /* 画面内部共通 */
+    .screen-header { border-bottom: 1px solid #000; padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+    .screen-header .back-btn { font-size: 18px; cursor: pointer; border: 1px solid #000; background: transparent; padding: 2px 6px; }
+    .screen-header h3 { font-size: 14px; font-weight: bold; }
+    .screen-body { padding: 12px; }
+
+    /* ボタン */
+    .btn { border: 2px solid #000; background: transparent; padding: 8px 16px; cursor: pointer; font-size: 13px; display: inline-block; text-align: center; }
+    .btn-block { display: block; width: 100%; margin-bottom: 8px; }
+    .btn-large { padding: 16px 24px; font-size: 16px; font-weight: bold; }
+    .btn-stop { border: 3px solid #000; padding: 20px; font-size: 18px; font-weight: bold; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .btn-row { display: flex; gap: 8px; margin-top: 8px; }
+    .btn-row .btn { flex: 1; }
+
+    /* 画像プレースホルダー */
+    .img-placeholder { background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #888; position: relative; }
+    .img-placeholder::before, .img-placeholder::after {
+      content: '';
+      position: absolute;
+      background: #bbb;
+    }
+    .img-placeholder-x { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+    .img-placeholder-x line { stroke: #bbb; }
+
+    /* スロット */
+    .slot-area { border: 1px solid #000; height: 200px; margin-bottom: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; gap: 4px; }
+    .slot-item { border: 1px solid #999; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background: #ddd; font-size: 10px; color: #666; }
+    .slot-center { width: 100%; border-top: 2px dashed #000; border-bottom: 2px dashed #000; height: 110px; display: flex; align-items: center; justify-content: center; margin: 4px 0; }
+
+    /* グリッド */
+    .book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .book-tile { border: 1px solid #999; padding: 4px; }
+    .book-tile .cover { background: #ddd; width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #666; margin-bottom: 4px; }
+    .book-tile .title { font-size: 9px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .book-tile .date { font-size: 8px; color: #888; margin-top: 2px; }
+    .book-tile .del-btn { font-size: 9px; border: 1px solid #999; background: transparent; padding: 1px 4px; margin-top: 2px; cursor: pointer; }
+
+    /* モーダル */
+    .modal-overlay { border: 2px dashed #999; padding: 12px; margin-bottom: 12px; }
+    .modal-box { border: 2px solid #000; padding: 16px; background: #fff; }
+    .modal-box h4 { font-size: 13px; margin-bottom: 8px; }
+    .modal-box p { font-size: 12px; margin-bottom: 12px; line-height: 1.6; }
+
+    /* ダイアログ */
+    .dialog-overlay { border: 2px dashed #999; padding: 12px; margin-bottom: 12px; }
+    .dialog-box { border: 2px solid #000; padding: 12px; }
+    .dialog-box p { font-size: 12px; margin-bottom: 8px; }
+
+    /* フォーム */
+    .form-group { margin-bottom: 12px; }
+    .form-group label { font-size: 11px; display: block; margin-bottom: 4px; }
+    .form-group input[type="text"] { border: 1px solid #000; width: 100%; padding: 6px 8px; font-size: 13px; background: transparent; }
+    .char-count { font-size: 10px; color: #888; text-align: right; margin-top: 2px; }
+
+    /* 決定画面 表紙大 */
+    .cover-large { background: #ddd; width: 100%; height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; color: #666; }
+    .result-title { font-size: 16px; font-weight: bold; text-align: center; margin: 12px 0 4px; }
+    .result-catch { font-size: 12px; text-align: center; margin-bottom: 16px; }
+
+    /* 状態・エラー */
+    .empty-state { border: 1px dashed #999; padding: 24px 12px; text-align: center; margin-bottom: 12px; }
+    .empty-state p { font-size: 12px; color: #666; margin-bottom: 12px; }
+    .error-msg { border: 1px solid #000; padding: 6px 8px; font-size: 11px; margin-bottom: 8px; }
+    .error-msg::before { content: "⚠ "; }
+
+    /* 遷移矢印 */
+    .flow-arrow { text-align: center; font-size: 20px; padding: 8px 0; flex: 0 0 auto; align-self: center; }
+
+    /* 備考セクション */
+    .notes-section { max-width: 900px; margin: 40px auto; border: 1px solid #999; padding: 16px; }
+    .notes-section h2 { font-size: 14px; border-bottom: 1px solid #ccc; margin-bottom: 12px; padding-bottom: 6px; }
+    .notes-section ul { font-size: 12px; line-height: 2; padding-left: 16px; }
+  </style>
+</head>
+<body>
+
+<!-- ページヘッダー -->
+<div class="page-header">
+  <h1>えほんガチャ — ワイヤーフレーム</h1>
+  <p>作成日: 2026-03-26 ／ 段階: 1（ワイヤーフレーム）／ 対象: Phase 1 全画面</p>
+</div>
+
+<!-- 画面フロー図 -->
+<div class="flow-section">
+  <h2>画面遷移フロー</h2>
+  <div class="flow-diagram">
+    <p>初回起動 → <code>M-01 初回起動モーダル</code> → 閉じる</p>
+    <p><code>S-01 ルーレット</code> → ストップ → <code>S-04 決定画面</code> → 決定 / もう一度 → <code>S-01</code></p>
+    <p><code>S-01</code> → 「登録する」 → <code>S-02 絵本登録</code> → 登録完了 → <code>S-03 図鑑</code></p>
+    <p><code>S-01</code> → 「図鑑」 → <code>S-03 図鑑</code> → 「戻る」 → <code>S-01</code></p>
+    <p><code>S-03</code> → 「登録する」 → <code>S-02</code></p>
+    <p><code>S-02</code> → 「戻る」 → <code>S-01</code>（遷移先は未確定 C-01）</p>
+  </div>
+</div>
+
+
+<!-- ===== M-01: 初回起動モーダル ===== -->
+<div class="section-label">M-01 — 初回起動モーダル</div>
+<div class="screens-row">
+  <div class="screen-wrapper">
+    <div class="screen-id">M-01 初回起動モーダル（S-01 の上に重なって表示）</div>
+    <div class="screen">
+      <div class="screen-body" style="padding-top: 40px;">
+        <div class="modal-overlay" style="position: relative;">
+          <p style="font-size: 10px; color: #999; margin-bottom: 8px;">▦ オーバーレイ（背景は S-01）</p>
+          <div class="modal-box">
+            <h4>データの保存についてご確認ください</h4>
+            <p>データはこのブラウザにのみ保存されます。ブラウザのデータ消去で失われます。</p>
+            <button class="btn btn-block">わかった（仮 ※C-08 文言確認）</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== S-01: ルーレット画面 ===== -->
+<div class="section-label">S-01 — ルーレット画面（正常系 / 空状態）</div>
+<div class="screens-row">
+
+  <!-- 正常系 -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-01【正常系】絵本あり（スロット回転中）</div>
+    <div class="screen">
+      <div class="screen-header">
+        <h3>えほんガチャ</h3>
+      </div>
+      <div class="screen-body">
+        <!-- スロットエリア -->
+        <div style="border: 1px solid #000; height: 220px; overflow: hidden; margin-bottom: 16px; position: relative; display: flex; align-items: center; justify-content: center;">
+          <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+            <div style="width: 120px; height: 80px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #666; opacity: 0.4;">ねないこだれだ</div>
+            <div style="width: 120px; height: 80px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #666;">おおきなかぶ</div>
+            <div style="width: 120px; height: 80px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #666; opacity: 0.4;">はらぺこあおむし</div>
+          </div>
+          <!-- 中央ライン -->
+          <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 2px dashed #000; transform: translateY(-50%); pointer-events: none;"></div>
+          <div style="position: absolute; bottom: 0; top: 0; left: 0; right: 0; background: linear-gradient(to bottom, #fff 0%, transparent 30%, transparent 70%, #fff 100%); pointer-events: none;"></div>
+        </div>
+        <!-- ストップボタン -->
+        <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+          <div class="btn-stop">STOP</div>
+        </div>
+        <p style="font-size: 10px; color: #999; text-align: center; margin-bottom: 16px;">← 最小タップ領域 60×60px</p>
+        <div class="btn-row">
+          <button class="btn">+ 登録する</button>
+          <button class="btn">図鑑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">→</div>
+
+  <!-- 空状態 -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-01【空状態】絵本 0 冊</div>
+    <div class="screen">
+      <div class="screen-header">
+        <h3>えほんガチャ</h3>
+      </div>
+      <div class="screen-body">
+        <div class="empty-state" style="margin-top: 40px;">
+          <p>まず絵本を登録してね</p>
+          <button class="btn">絵本を登録する</button>
+        </div>
+        <div class="btn-row" style="margin-top: 80px;">
+          <button class="btn">+ 登録する</button>
+          <button class="btn">図鑑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ===== S-02: 絵本登録画面 ===== -->
+<div class="section-label">S-02 — 絵本登録画面（正常系 / バリデーションエラー）</div>
+<div class="screens-row">
+
+  <!-- 正常系（画像選択済み） -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-02【正常系】画像・タイトル入力済み</div>
+    <div class="screen">
+      <div class="screen-header">
+        <button class="back-btn">←</button>
+        <h3>絵本を登録する</h3>
+      </div>
+      <div class="screen-body">
+        <!-- 画像プレビュー -->
+        <div style="margin-bottom: 12px;">
+          <div class="img-placeholder" style="height: 160px; position: relative;">
+            <svg width="100%" height="100%" style="position: absolute; top:0; left:0;" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="100%" y2="100%" stroke="#bbb" stroke-width="1"/>
+              <line x1="100%" y1="0" x2="0" y2="100%" stroke="#bbb" stroke-width="1"/>
+            </svg>
+            <span style="position: relative; z-index: 1;">表紙プレビュー</span>
+          </div>
+          <p style="font-size: 10px; color: #888; margin-top: 4px; text-align: center;">タップして写真を選択 / 撮影</p>
+        </div>
+        <!-- タイトル入力 -->
+        <div class="form-group">
+          <label>絵本のタイトル *</label>
+          <input type="text" value="ねないこだれだ">
+          <div class="char-count">8 / 30</div>
+        </div>
+        <button class="btn btn-block btn-large" style="margin-top: 16px;">登録する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- バリデーションエラー -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-02【エラー】画像未選択 + タイトル未入力</div>
+    <div class="screen">
+      <div class="screen-header">
+        <button class="back-btn">←</button>
+        <h3>絵本を登録する</h3>
+      </div>
+      <div class="screen-body">
+        <!-- 画像未選択エラー -->
+        <div class="error-msg">表紙の写真を選んでください</div>
+        <div style="margin-bottom: 12px;">
+          <div class="img-placeholder" style="height: 160px; position: relative; border: 2px solid #000;">
+            <svg width="100%" height="100%" style="position: absolute; top:0; left:0;" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="100%" y2="100%" stroke="#bbb" stroke-width="1"/>
+              <line x1="100%" y1="0" x2="0" y2="100%" stroke="#bbb" stroke-width="1"/>
+            </svg>
+            <span style="position: relative; z-index: 1;">写真を選択してください</span>
+          </div>
+          <p style="font-size: 10px; color: #888; margin-top: 4px; text-align: center;">タップして写真を選択 / 撮影</p>
+        </div>
+        <!-- タイトル未入力エラー -->
+        <div class="form-group">
+          <label>絵本のタイトル *</label>
+          <input type="text" placeholder="絵本のタイトル（仮 ※文言確認）" style="border: 2px solid #000;">
+          <div class="char-count">0 / 30</div>
+        </div>
+        <div class="error-msg">タイトルを入力してください</div>
+        <button class="btn btn-block btn-large" style="margin-top: 16px;">登録する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ストレージ容量不足エラー -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-02【エラー】ローカルストレージ容量不足</div>
+    <div class="screen">
+      <div class="screen-header">
+        <button class="back-btn">←</button>
+        <h3>絵本を登録する</h3>
+      </div>
+      <div class="screen-body">
+        <div class="img-placeholder" style="height: 160px; position: relative; margin-bottom: 12px;">
+          <svg width="100%" height="100%" style="position: absolute; top:0; left:0;" preserveAspectRatio="none">
+            <line x1="0" y1="0" x2="100%" y2="100%" stroke="#bbb" stroke-width="1"/>
+            <line x1="100%" y1="0" x2="0" y2="100%" stroke="#bbb" stroke-width="1"/>
+          </svg>
+          <span style="position: relative; z-index: 1;">表紙プレビュー</span>
+        </div>
+        <div class="form-group">
+          <label>絵本のタイトル *</label>
+          <input type="text" value="ぐりとぐら">
+        </div>
+        <div class="error-msg">データを保存できませんでした。不要な絵本を削除してください</div>
+        <button class="btn btn-block btn-large" style="margin-top: 8px;">登録する</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ===== S-03: 図鑑画面 ===== -->
+<div class="section-label">S-03 — 図鑑画面（正常系 / 空状態 / 削除確認ダイアログ）</div>
+<div class="screens-row">
+
+  <!-- 正常系 -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-03【正常系】絵本 6 冊</div>
+    <div class="screen">
+      <div class="screen-header">
+        <button class="back-btn">←</button>
+        <h3>図鑑</h3>
+      </div>
+      <div class="screen-body">
+        <div style="margin-bottom: 8px; display: flex; justify-content: flex-end;">
+          <button class="btn" style="font-size: 11px; padding: 4px 10px;">+ 登録する</button>
+        </div>
+        <div class="book-grid">
+          <!-- タイル1: 既読あり -->
+          <div class="book-tile">
+            <div class="cover">表紙</div>
+            <div class="title">ねないこだれだ</div>
+            <div class="date">3/24</div>
+            <button class="del-btn">削除</button>
+          </div>
+          <!-- タイル2: 未読 -->
+          <div class="book-tile">
+            <div class="cover">表紙</div>
+            <div class="title">おおきなかぶ</div>
+            <div class="date" style="color: #ccc;">—</div>
+            <button class="del-btn">削除</button>
+          </div>
+          <!-- タイル3: 既読あり -->
+          <div class="book-tile">
+            <div class="cover">表紙</div>
+            <div class="title">はらぺこあおむし</div>
+            <div class="date">3/20</div>
+            <button class="del-btn">削除</button>
+          </div>
+          <!-- タイル4 -->
+          <div class="book-tile">
+            <div class="cover">表紙</div>
+            <div class="title">ぐりとぐら</div>
+            <div class="date">3/18</div>
+            <button class="del-btn">削除</button>
+          </div>
+          <!-- タイル5: 未読 -->
+          <div class="book-tile">
+            <div class="cover">表紙</div>
+            <div class="title">いないいないばあ</div>
+            <div class="date" style="color: #ccc;">—</div>
+            <button class="del-btn">削除</button>
+          </div>
+          <!-- タイル6 -->
+          <div class="book-tile">
+            <div class="cover">表紙</div>
+            <div class="title">どうぞのいす</div>
+            <div class="date">3/15</div>
+            <button class="del-btn">削除</button>
+          </div>
+        </div>
+        <p style="font-size: 10px; color: #999; margin-top: 8px;">※ 並び順: 登録日降順（未確定 C-03）</p>
+        <p style="font-size: 10px; color: #999;">※ 削除ボタンの表示方法: 未確定（長押し / 明示ボタン 等）C-03</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 空状態 -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-03【空状態】絵本 0 冊</div>
+    <div class="screen">
+      <div class="screen-header">
+        <button class="back-btn">←</button>
+        <h3>図鑑</h3>
+      </div>
+      <div class="screen-body">
+        <div class="empty-state" style="margin-top: 60px;">
+          <p>まだ絵本が登録されていません（仮 ※文言確認）</p>
+          <button class="btn">絵本を登録する</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 削除確認ダイアログ -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-03【削除確認ダイアログ】</div>
+    <div class="screen">
+      <div class="screen-header">
+        <button class="back-btn">←</button>
+        <h3>図鑑</h3>
+      </div>
+      <div class="screen-body">
+        <!-- 背景の図鑑（薄く） -->
+        <div style="opacity: 0.3; margin-bottom: 8px;">
+          <div class="book-grid">
+            <div class="book-tile"><div class="cover">表紙</div><div class="title">ねないこだれだ</div></div>
+            <div class="book-tile"><div class="cover">表紙</div><div class="title">おおきなかぶ</div></div>
+            <div class="book-tile"><div class="cover">表紙</div><div class="title">はらぺこあおむし</div></div>
+          </div>
+        </div>
+        <!-- ダイアログ -->
+        <div class="dialog-overlay">
+          <p style="font-size: 10px; color: #999; margin-bottom: 6px;">▦ 確認ダイアログ</p>
+          <div class="dialog-box">
+            <p>この絵本を削除しますか？</p>
+            <p style="font-size: 11px; color: #666; margin-bottom: 10px;">「ねないこだれだ」</p>
+            <div class="btn-row">
+              <button class="btn">削除する</button>
+              <button class="btn">キャンセル</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ===== S-04: 決定画面 ===== -->
+<div class="section-label">S-04 — 決定画面</div>
+<div class="screens-row">
+
+  <!-- 正常系 -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-04【正常系】絵本が選ばれた</div>
+    <div class="screen">
+      <div class="screen-body" style="padding: 0;">
+        <!-- 表紙大（画面高さ 60%以上） -->
+        <div class="cover-large" style="height: 300px; position: relative;">
+          <svg width="100%" height="100%" style="position: absolute; top:0; left:0;" preserveAspectRatio="none">
+            <line x1="0" y1="0" x2="100%" y2="100%" stroke="#bbb" stroke-width="1"/>
+            <line x1="100%" y1="0" x2="0" y2="100%" stroke="#bbb" stroke-width="1"/>
+          </svg>
+          <span style="position: relative; z-index: 1; font-size: 11px;">表紙画像<br>（幅100% / 高さ60%以上）</span>
+        </div>
+        <div style="padding: 16px;">
+          <div class="result-catch">今日はこれに決まり！</div>
+          <div class="result-title">ねないこだれだ</div>
+          <div class="btn-row" style="margin-top: 16px;">
+            <button class="btn btn-large">決定！</button>
+            <button class="btn">もう一度</button>
+          </div>
+          <p style="font-size: 10px; color: #999; margin-top: 8px;">「決定」→ 既読日を当日で記録 → S-01</p>
+          <p style="font-size: 10px; color: #999;">「もう一度」→ 既読日記録なし → S-01</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 書き込みエラー（未確定） -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-04【エラー】「決定」押下時の書き込み失敗（未確定 C-02）</div>
+    <div class="screen">
+      <div class="screen-body" style="padding: 0;">
+        <div class="cover-large" style="height: 300px; position: relative;">
+          <svg width="100%" height="100%" style="position: absolute; top:0; left:0;" preserveAspectRatio="none">
+            <line x1="0" y1="0" x2="100%" y2="100%" stroke="#bbb" stroke-width="1"/>
+            <line x1="100%" y1="0" x2="0" y2="100%" stroke="#bbb" stroke-width="1"/>
+          </svg>
+          <span style="position: relative; z-index: 1; font-size: 11px;">表紙画像</span>
+        </div>
+        <div style="padding: 16px;">
+          <div class="result-catch">今日はこれに決まり！</div>
+          <div class="result-title">ねないこだれだ</div>
+          <div class="error-msg" style="margin-top: 8px;">記録の保存に失敗しました（文言・挙動は C-02 で確認）</div>
+          <div class="btn-row" style="margin-top: 8px;">
+            <button class="btn btn-large">決定！</button>
+            <button class="btn">もう一度</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- 備考 -->
+<div class="notes-section">
+  <h2>未確定事項・確認事項（要ステークホルダー確認）</h2>
+  <ul>
+    <li><strong>C-01</strong> S-02「戻る」遷移先: S-03 → S-02 の場合、戻り先は S-01 固定か S-03 か</li>
+    <li><strong>C-02</strong> S-04「決定」押下時の書き込みエラー: エラー表示して留まるか S-01 に遷移するか</li>
+    <li><strong>C-03</strong> S-03 並び順: 登録日降順でよいか</li>
+    <li><strong>C-04</strong> S-02 画像フォーマット制限: OS 側で弾くかアプリ側でエラー表示するか</li>
+    <li><strong>C-05</strong> S-02 登録上限（100冊）: 超過時の挙動・メッセージを設定するか</li>
+    <li><strong>C-06</strong> S-03「登録する」ボタン: 常時表示か空状態時のみか</li>
+    <li><strong>C-07</strong> S-02 入力途中で「戻る」: 確認ダイアログを出すか否か</li>
+    <li><strong>C-08</strong> M-01 ボタン文言: 「わかった」以外の案があれば確認</li>
+    <li><strong>U-02</strong> S-01 登録絵本が1冊の場合のルーレット演出: スロットを省略して直接 S-04 へ</li>
+  </ul>
+</div>
+
+</body>
+</html>

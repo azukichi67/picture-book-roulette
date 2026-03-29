@@ -18,7 +18,10 @@
 
 # 技術スタック
 
-未定
+- **フレームワーク:** React + React Router v7（フレームワークモード）
+- **ビルドツール:** Vite
+- **Phase 1:** SPA モード（`ssr: false`）
+- **Phase 2:** SSR モードに切り替え予定
 
 ---
 

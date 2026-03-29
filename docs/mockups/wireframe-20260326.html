@@ -117,11 +117,11 @@
   <h2>画面遷移フロー</h2>
   <div class="flow-diagram">
     <p>初回起動 → <code>M-01 初回起動モーダル</code> → 閉じる</p>
-    <p><code>S-01 ルーレット</code> → ストップ → <code>S-04 決定画面</code> → 決定 / もう一度 → <code>S-01</code></p>
+    <p><code>S-01 ルーレット</code> → ストップ → <code>S-04 決定画面</code> → けってい / もういちど → <code>S-01</code></p>
     <p><code>S-01</code> → 「登録する」 → <code>S-02 絵本登録</code> → 登録完了 → <code>S-03 図鑑</code></p>
-    <p><code>S-01</code> → 「図鑑」 → <code>S-03 図鑑</code> → 「戻る」 → <code>S-01</code></p>
+    <p><code>S-01</code> → 「ずかん」 → <code>S-03 図鑑</code> → 「戻る」 → <code>S-01</code></p>
     <p><code>S-03</code> → 「登録する」 → <code>S-02</code></p>
-    <p><code>S-02</code> → 「戻る」 → <code>S-01</code>（遷移先は未確定 C-01）</p>
+    <p><code>S-02</code> → 「戻る」 → 遷移元画面（S-01 または S-03）</p>
   </div>
 </div>
 
@@ -138,7 +138,7 @@
           <div class="modal-box">
             <h4>データの保存についてご確認ください</h4>
             <p>データはこのブラウザにのみ保存されます。ブラウザのデータ消去で失われます。</p>
-            <button class="btn btn-block">わかった（仮 ※C-08 文言確認）</button>
+            <button class="btn btn-block">OK</button>
           </div>
         </div>
       </div>
@@ -172,12 +172,12 @@
         </div>
         <!-- ストップボタン -->
         <div style="display: flex; justify-content: center; margin-bottom: 16px;">
-          <div class="btn-stop">STOP</div>
+          <div class="btn-stop">ストップ</div>
         </div>
         <p style="font-size: 10px; color: #999; text-align: center; margin-bottom: 16px;">← 最小タップ領域 60×60px</p>
         <div class="btn-row">
           <button class="btn">+ 登録する</button>
-          <button class="btn">図鑑</button>
+          <button class="btn">ずかん</button>
         </div>
       </div>
     </div>
@@ -199,7 +199,7 @@
         </div>
         <div class="btn-row" style="margin-top: 80px;">
           <button class="btn">+ 登録する</button>
-          <button class="btn">図鑑</button>
+          <button class="btn">ずかん</button>
         </div>
       </div>
     </div>
@@ -267,7 +267,7 @@
         <!-- タイトル未入力エラー -->
         <div class="form-group">
           <label>絵本のタイトル *</label>
-          <input type="text" placeholder="絵本のタイトル（仮 ※文言確認）" style="border: 2px solid #000;">
+          <input type="text" placeholder="絵本のタイトル" style="border: 2px solid #000;">
           <div class="char-count">0 / 30</div>
         </div>
         <div class="error-msg">タイトルを入力してください</div>
@@ -309,64 +309,94 @@
 <div class="section-label">S-03 — 図鑑画面（正常系 / 空状態 / 削除確認ダイアログ）</div>
 <div class="screens-row">
 
-  <!-- 正常系 -->
+  <!-- 正常系（通常モード） -->
   <div class="screen-wrapper">
-    <div class="screen-id">S-03【正常系】絵本 6 冊</div>
+    <div class="screen-id">S-03【正常系】絵本 6 冊（通常モード）</div>
     <div class="screen">
       <div class="screen-header">
         <button class="back-btn">←</button>
         <h3>図鑑</h3>
       </div>
       <div class="screen-body">
-        <div style="margin-bottom: 8px; display: flex; justify-content: flex-end;">
+        <div style="margin-bottom: 8px; display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn" style="font-size: 11px; padding: 4px 10px;">編集</button>
           <button class="btn" style="font-size: 11px; padding: 4px 10px;">+ 登録する</button>
         </div>
         <div class="book-grid">
-          <!-- タイル1: 既読あり -->
+          <!-- タイトル昇順（あいうえお順）で並べる -->
+          <!-- タイル1: 未読 -->
           <div class="book-tile">
             <div class="cover">表紙</div>
-            <div class="title">ねないこだれだ</div>
-            <div class="date">3/24</div>
-            <button class="del-btn">削除</button>
+            <div class="title">いないいないばあ</div>
           </div>
-          <!-- タイル2: 未読 -->
+          <!-- タイル2: 既読あり -->
           <div class="book-tile">
             <div class="cover">表紙</div>
             <div class="title">おおきなかぶ</div>
-            <div class="date" style="color: #ccc;">—</div>
-            <button class="del-btn">削除</button>
+            <div class="date">3/20</div>
           </div>
           <!-- タイル3: 既読あり -->
           <div class="book-tile">
             <div class="cover">表紙</div>
-            <div class="title">はらぺこあおむし</div>
-            <div class="date">3/20</div>
-            <button class="del-btn">削除</button>
+            <div class="title">ぐりとぐら</div>
+            <div class="date">3/18</div>
           </div>
           <!-- タイル4 -->
           <div class="book-tile">
             <div class="cover">表紙</div>
-            <div class="title">ぐりとぐら</div>
-            <div class="date">3/18</div>
-            <button class="del-btn">削除</button>
-          </div>
-          <!-- タイル5: 未読 -->
-          <div class="book-tile">
-            <div class="cover">表紙</div>
-            <div class="title">いないいないばあ</div>
-            <div class="date" style="color: #ccc;">—</div>
-            <button class="del-btn">削除</button>
-          </div>
-          <!-- タイル6 -->
-          <div class="book-tile">
-            <div class="cover">表紙</div>
             <div class="title">どうぞのいす</div>
             <div class="date">3/15</div>
-            <button class="del-btn">削除</button>
+          </div>
+          <!-- タイル5: 既読あり -->
+          <div class="book-tile">
+            <div class="cover">表紙</div>
+            <div class="title">ねないこだれだ</div>
+            <div class="date">3/24</div>
+          </div>
+          <!-- タイル6: 未読 -->
+          <div class="book-tile">
+            <div class="cover">表紙</div>
+            <div class="title">はらぺこあおむし</div>
           </div>
         </div>
-        <p style="font-size: 10px; color: #999; margin-top: 8px;">※ 並び順: 登録日降順（未確定 C-03）</p>
-        <p style="font-size: 10px; color: #999;">※ 削除ボタンの表示方法: 未確定（長押し / 明示ボタン 等）C-03</p>
+        <p style="font-size: 10px; color: #999; margin-top: 8px;">※ 並び順: タイトル昇順（あいうえお順）</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 編集モード -->
+  <div class="screen-wrapper">
+    <div class="screen-id">S-03【編集モード】各タイルに×ボタン表示</div>
+    <div class="screen">
+      <div class="screen-header">
+        <button class="back-btn">←</button>
+        <h3>図鑑</h3>
+      </div>
+      <div class="screen-body">
+        <div style="margin-bottom: 8px; display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn" style="font-size: 11px; padding: 4px 10px; font-weight: bold;">完了</button>
+          <button class="btn" style="font-size: 11px; padding: 4px 10px;">+ 登録する</button>
+        </div>
+        <div class="book-grid">
+          <div class="book-tile" style="position: relative;">
+            <div style="position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; border: 1px solid #000; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer;">×</div>
+            <div class="cover">表紙</div>
+            <div class="title">いないいないばあ</div>
+          </div>
+          <div class="book-tile" style="position: relative;">
+            <div style="position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; border: 1px solid #000; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer;">×</div>
+            <div class="cover">表紙</div>
+            <div class="title">おおきなかぶ</div>
+            <div class="date">3/20</div>
+          </div>
+          <div class="book-tile" style="position: relative;">
+            <div style="position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; border: 1px solid #000; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer;">×</div>
+            <div class="cover">表紙</div>
+            <div class="title">ぐりとぐら</div>
+            <div class="date">3/18</div>
+          </div>
+        </div>
+        <p style="font-size: 10px; color: #999; margin-top: 8px;">※ 編集モード中: 各タイル右上に×ボタン表示。タップで削除確認ダイアログ</p>
       </div>
     </div>
   </div>
@@ -381,7 +411,7 @@
       </div>
       <div class="screen-body">
         <div class="empty-state" style="margin-top: 60px;">
-          <p>まだ絵本が登録されていません（仮 ※文言確認）</p>
+          <p>まだ絵本が登録されていません</p>
           <button class="btn">絵本を登録する</button>
         </div>
       </div>
@@ -442,22 +472,22 @@
           <span style="position: relative; z-index: 1; font-size: 11px;">表紙画像<br>（幅100% / 高さ60%以上）</span>
         </div>
         <div style="padding: 16px;">
-          <div class="result-catch">今日はこれに決まり！</div>
+          <div class="result-catch">これにきまり！</div>
           <div class="result-title">ねないこだれだ</div>
           <div class="btn-row" style="margin-top: 16px;">
-            <button class="btn btn-large">決定！</button>
-            <button class="btn">もう一度</button>
+            <button class="btn btn-large">けってい</button>
+            <button class="btn">もういちど</button>
           </div>
-          <p style="font-size: 10px; color: #999; margin-top: 8px;">「決定」→ 既読日を当日で記録 → S-01</p>
-          <p style="font-size: 10px; color: #999;">「もう一度」→ 既読日記録なし → S-01</p>
+          <p style="font-size: 10px; color: #999; margin-top: 8px;">「けってい」→ 既読日を当日で記録 → S-01</p>
+          <p style="font-size: 10px; color: #999;">「もういちど」→ 既読日記録なし → S-01</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 書き込みエラー（未確定） -->
+  <!-- 書き込みエラー -->
   <div class="screen-wrapper">
-    <div class="screen-id">S-04【エラー】「決定」押下時の書き込み失敗（未確定 C-02）</div>
+    <div class="screen-id">S-04【エラー】「けってい」押下時の書き込み失敗</div>
     <div class="screen">
       <div class="screen-body" style="padding: 0;">
         <div class="cover-large" style="height: 300px; position: relative;">
@@ -468,12 +498,13 @@
           <span style="position: relative; z-index: 1; font-size: 11px;">表紙画像</span>
         </div>
         <div style="padding: 16px;">
-          <div class="result-catch">今日はこれに決まり！</div>
+          <div class="result-catch">これにきまり！</div>
           <div class="result-title">ねないこだれだ</div>
-          <div class="error-msg" style="margin-top: 8px;">記録の保存に失敗しました（文言・挙動は C-02 で確認）</div>
+          <div class="error-msg" style="margin-top: 8px;">保存できませんでした</div>
+          <p style="font-size: 10px; color: #999; margin-top: 4px;">エラー表示後、S-01 に遷移する（既読日は記録されない）</p>
           <div class="btn-row" style="margin-top: 8px;">
-            <button class="btn btn-large">決定！</button>
-            <button class="btn">もう一度</button>
+            <button class="btn btn-large">けってい</button>
+            <button class="btn">もういちど</button>
           </div>
         </div>
       </div>
@@ -485,17 +516,17 @@
 
 <!-- 備考 -->
 <div class="notes-section">
-  <h2>未確定事項・確認事項（要ステークホルダー確認）</h2>
+  <h2>解決済み確認事項</h2>
   <ul>
-    <li><strong>C-01</strong> S-02「戻る」遷移先: S-03 → S-02 の場合、戻り先は S-01 固定か S-03 か</li>
-    <li><strong>C-02</strong> S-04「決定」押下時の書き込みエラー: エラー表示して留まるか S-01 に遷移するか</li>
-    <li><strong>C-03</strong> S-03 並び順: 登録日降順でよいか</li>
-    <li><strong>C-04</strong> S-02 画像フォーマット制限: OS 側で弾くかアプリ側でエラー表示するか</li>
-    <li><strong>C-05</strong> S-02 登録上限（100冊）: 超過時の挙動・メッセージを設定するか</li>
-    <li><strong>C-06</strong> S-03「登録する」ボタン: 常時表示か空状態時のみか</li>
-    <li><strong>C-07</strong> S-02 入力途中で「戻る」: 確認ダイアログを出すか否か</li>
-    <li><strong>C-08</strong> M-01 ボタン文言: 「わかった」以外の案があれば確認</li>
-    <li><strong>U-02</strong> S-01 登録絵本が1冊の場合のルーレット演出: スロットを省略して直接 S-04 へ</li>
+    <li><strong>C-01</strong> S-02「戻る」→ 遷移元に戻る（動的バック）</li>
+    <li><strong>C-02</strong> S-04「けってい」書き込みエラー → エラー表示しつつ S-01 に遷移</li>
+    <li><strong>C-03</strong> S-03 並び順 → タイトル昇順（あいうえお順）。Phase 2 でソート機能追加</li>
+    <li><strong>C-04</strong> S-02 画像フォーマット → OS のファイル選択 UI で JPEG/PNG に制限</li>
+    <li><strong>C-05</strong> S-02 登録上限 → 設けない。容量不足時のエラーハンドリングで対応</li>
+    <li><strong>C-06</strong> S-03「登録する」ボタン → 常時表示</li>
+    <li><strong>C-07</strong> S-02 入力途中で「戻る」→ 確認ダイアログを表示する</li>
+    <li><strong>C-08</strong> M-01 ボタン文言 →「OK」</li>
+    <li><strong>U-02</strong> S-01 登録絵本 1 冊 → 短めのアニメーション演出を挟んでから S-04 に遷移</li>
   </ul>
 </div>
 

@@ -9,7 +9,8 @@
     "typecheck": "react-router typegen && tsc",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@react-router/node": "7.13.2",
@@ -21,11 +22,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.9",
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "@react-router/dev": "7.13.2",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^22",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "lefthook": "^2.1.4",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
     "vite": "^7.1.7",

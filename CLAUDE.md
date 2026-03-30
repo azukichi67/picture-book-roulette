@@ -18,7 +18,8 @@
 
 # コミットメッセージ規約
 
-未定
+Conventional Commits（例: `feat: ○○`, `fix: ○○`, `chore: ○○`）
+commitlint で自動検証される
 
 ---
 

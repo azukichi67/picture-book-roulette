@@ -10,7 +10,7 @@ export class StorageQuotaError extends Error {
   }
 }
 
-function saveBooks(books: Book[]): void {
+const saveBooks = (books: Book[]): void => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
   } catch (error) {
@@ -22,9 +22,9 @@ function saveBooks(books: Book[]): void {
     }
     throw error;
   }
-}
+};
 
-function isBook(value: unknown): value is Book {
+const isBook = (value: unknown): value is Book => {
   if (typeof value !== "object" || value === null) return false;
   const obj = value as Record<string, unknown>;
   return (
@@ -34,9 +34,9 @@ function isBook(value: unknown): value is Book {
     (obj.lastReadDate === null || typeof obj.lastReadDate === "string") &&
     typeof obj.createdAt === "string"
   );
-}
+};
 
-export function getBooks(): Book[] {
+export const getBooks = (): Book[] => {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw === null) {
     return [];
@@ -49,23 +49,23 @@ export function getBooks(): Book[] {
     console.warn("localStorage のデータが破損しています。初期化します。");
     return [];
   }
-}
+};
 
-export function addBook(book: Book): void {
+export const addBook = (book: Book): void => {
   const books = getBooks();
   saveBooks([...books, book]);
-}
+};
 
-export function deleteBook(id: string): void {
+export const deleteBook = (id: string): void => {
   const books = getBooks();
   const index = books.findIndex((b) => b.id === id);
   if (index === -1) {
     throw new Error(`Book not found: ${id}`);
   }
   saveBooks(books.filter((book) => book.id !== id));
-}
+};
 
-export function updateBook(book: Book): void {
+export const updateBook = (book: Book): void => {
   const books = getBooks();
   const index = books.findIndex((b) => b.id === book.id);
   if (index === -1) {
@@ -73,4 +73,4 @@ export function updateBook(book: Book): void {
   }
   books[index] = book;
   saveBooks(books);
-}
+};

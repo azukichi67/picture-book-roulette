@@ -1,6 +1,6 @@
 import type { Book } from "~/types/book";
 
-const STORAGE_KEY = "ehon-gacha-books";
+export const STORAGE_KEY = "ehon-gacha-books";
 
 export class StorageQuotaError extends Error {
   constructor(cause: unknown) {
